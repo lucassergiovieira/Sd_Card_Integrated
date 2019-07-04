@@ -1,5 +1,5 @@
-#ifndef integration
-#define integration
+ifndef integration_hpp
+#define integration_hpp
 #include "mbed.h"
 
 
@@ -12,5 +12,9 @@ void button();
 void begin();
 void end();
 float temp;
+void status_semaforo();
+void write_semaforo();
+void read_semaforo();
+
 
 #endif
