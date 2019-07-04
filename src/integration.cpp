@@ -1,5 +1,6 @@
 #include <iostream>
 #include "integration.hpp"
+#include "SDHCFileSystem.h"
 #include "mbed.h"
 
 DigitalOut my_leds[]={(PD_12),(PD_13),(PD_14)};
@@ -9,7 +10,72 @@ InterruptIn event(PA_0);
 Timer cont;
 void begin();
 void end();
-Ticker ticker ;
+Ticker ticker;
+Serial pc(USBTX, USBRX);
+SDFileSystem sd(PA_7, PA_6, PA_5, PC_1, "sd"); // MOSI, MISO, SCK, CS
+FILE *fp
+unsigned float c; 
+
+//############################
+//variaveis para escrever no semaforo
+Ticker tsem;
+Timer endsem;
+char status_sem;
+float time_sem=0.0;
+
+
+//############################
+//funcoes para gravar no SD
+void status_semaforo(){
+        time_sem++;
+	switch(s){          // switch case para semáforo normal 
+                case 0:  
+                    status_sem = 'verde';
+		    write_semaforo();
+		
+                break;
+                case 1:
+
+                    status_sem = 'amarelo';
+		    write_semaforo();
+                break;
+                case 2:
+                    status_sem = 'vermelho';
+		    write_semaforo();
+                break;
+                }
+	
+}
+void write_semaforo(){
+
+    wait(2);
+    pc.printf("Start\r\n"); // inicializando o sd card 
+    while(true){
+      FILE *fp = fopen("/sd/myfile.txt", "w");  // open the file in 'write' mode
+    while (!feof(fp)){                        // while not end of file
+           c=fgetc(fp);                         // get a character/byte from the file
+           printf(" Status %02x\n\r",status_sem); 
+           printf(" Time %02x\n\r",time_sem);// and show it in hex format
+      }
+      fclose(fp);                               // close the file
+
+
+}
+
+void read_semaforo(){ wait(2);
+    pc.printf("Start\r\n"); // inicializando o sd card 
+    while(true){
+      FILE *fp = fopen("/sd/myfile.txt", "r");  // open the file in 'read' mode
+    while (!feof(fp)){                        // while not end of file
+           c=fgetc(fp);                         // get a character/byte from the file 
+      }
+      fclose(fp);                               // close the file
+time_sem=0;
+
+}
+
+//############################
+
 
 void semaforo(){        // chama a função loop 
             event.rise(&button); // chamar push na borda de subida da interrupção
